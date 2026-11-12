@@ -21,7 +21,8 @@ Bun (runtime + package manager) with workspaces `client/` and `server/` (`shared
 
 - `bun install` — install all workspaces (run at the root)
 - `bun run dev` — start both workspaces: client (Vite, http://localhost:5173, proxies `/api` → server) and server (Bun watch mode on `PORT`, default 3000; `GET /api/health` → `{"status":"ok"}`)
-- `bun --filter @helpdesk/client typecheck` — typecheck the client
+- `bun --filter @helpdesk/client typecheck` / `bun --filter @helpdesk/server typecheck` — typecheck a workspace
+- Database (run in `server/`; needs `server/.env` with `DATABASE_URL`, see `server/.env.example`): after editing `src/prisma/contract.prisma` run `bun run contract:emit`, then `bun run migration:plan --name <name>`, then `bun run db:migrate`. `GET /api/health` also reports `db: "ok" | "error"`.
 
 Add commands here as tickets introduce them (lint, build, db:migrate, root typecheck).
 

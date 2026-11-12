@@ -7,11 +7,15 @@ See [project-scope.md](project-scope.md) for the requirements, [tech-stack.md](t
 ## Requirements
 
 - [Bun](https://bun.sh) (`brew install oven-sh/bun/bun`)
+- PostgreSQL 15+ running locally (`brew install postgresql@18 && brew services start postgresql@18`)
 
 ## Getting started
 
 ```sh
 bun install
+createdb helpdesk
+cp server/.env.example server/.env   # then set your Postgres user in DATABASE_URL
+(cd server && bun run db:migrate)
 bun run dev
 ```
 
@@ -24,5 +28,5 @@ In development, Vite proxies `/api` requests to the server. To check the server 
 
 ```sh
 curl http://localhost:3000/api/health
-# {"status":"ok"}
+# {"status":"ok","db":"ok"}
 ```
