@@ -1,9 +1,9 @@
 import { Route, Routes } from "react-router";
-import AppLayout from "./components/AppLayout";
-import GuestRoute from "./components/GuestRoute";
-import ProtectedRoute from "./components/ProtectedRoute";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
+import AppLayout from "@/components/AppLayout";
+import GuestRoute from "@/components/GuestRoute";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import HomePage from "@/pages/HomePage";
+import LoginPage from "@/pages/LoginPage";
 
 export default function App() {
   return (

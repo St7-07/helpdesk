@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation, type Location } from "react-router";
-import { useSession } from "../lib/session";
+import { useSession } from "@/lib/session";
 
 /**
  * Renders its child routes only when signed out. Once signed in (including
@@ -11,8 +11,9 @@ export default function GuestRoute() {
   const location = useLocation();
 
   if (session) {
-    const from = (location.state as { from?: Location } | null)?.from?.pathname ?? "/";
-    return <Navigate to={from} replace />;
+    const from = (location.state as { from?: Location } | null)?.from;
+    const to = from ? `${from.pathname}${from.search}${from.hash}` : "/";
+    return <Navigate to={to} replace />;
   }
   return <Outlet />;
 }

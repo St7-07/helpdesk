@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router";
-import { useSession } from "../lib/session";
+import { useSession } from "@/lib/session";
 
 /** Renders its child routes only when signed in; otherwise goes to /login. */
 export default function ProtectedRoute() {
