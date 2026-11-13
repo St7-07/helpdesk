@@ -23,8 +23,8 @@ export default function HomePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-gray-900">Home</h1>
-      <p className="mt-2 text-sm text-gray-600">API status: {apiStatus}</p>
+      <h1 className="text-2xl font-semibold">Home</h1>
+      <p className="mt-2 text-sm text-muted-foreground">API status: {apiStatus}</p>
     </div>
   );
 }
