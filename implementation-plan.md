@@ -22,7 +22,7 @@ Built from [project-scope.md](project-scope.md) and [tech-stack.md](tech-stack.m
 - [ ] HD-17 Complete the Express setup: JSON body parsing, JSON 404 for unknown `/api` routes, and a central error handler (base server and `/api/health` come from HD-11)
 - [x] HD-18 Set up the Vite dev proxy from `/api` to the Express server
 - [ ] HD-19 Load environment variables from `.env` and add `.env.example`
-- [ ] HD-20 Create the local Postgres database and connect Prisma 8 to it
+- [x] HD-20 Create the local Postgres database and connect Prisma 8 to it
 - [ ] HD-21 Add root Bun scripts: `build`, `lint`, `typecheck`, `format`, `db:migrate` (root `dev` ships with the initial commit)
 - [ ] HD-22 Complete the README with full setup steps (database, env vars, all scripts); a minimal README ships with the initial commit
 
