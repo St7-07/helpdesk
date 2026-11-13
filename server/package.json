@@ -7,7 +7,8 @@
     "typecheck": "tsc",
     "contract:emit": "prisma contract emit",
     "migration:plan": "prisma migration plan",
-    "db:migrate": "prisma db migrate"
+    "db:migrate": "prisma db migrate",
+    "db:seed": "bun src/seed.ts"
   },
   "dependencies": {
     "@prisma/orm-postgres": "^8.0.0-rc.23",
