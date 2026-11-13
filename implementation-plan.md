@@ -17,7 +17,7 @@ Built from [project-scope.md](project-scope.md) and [tech-stack.md](tech-stack.m
 - [ ] HD-12 Add a shared TypeScript config (`tsconfig.base.json`) and per-package configs
 - [ ] HD-13 Add ESLint + Prettier
 - [x] HD-14 Scaffold `client/` with React + Vite and add it as a workspace (minimal page showing the API status)
-- [ ] HD-15 Add Tailwind CSS to the client
+- [x] HD-15 Add Tailwind CSS to the client
 - [ ] HD-16 Add React Router with placeholder pages (Login, Tickets, Ticket Detail, Dashboard, Users)
 - [ ] HD-17 Complete the Express setup: JSON body parsing, JSON 404 for unknown `/api` routes, and a central error handler (base server and `/api/health` come from HD-11)
 - [x] HD-18 Set up the Vite dev proxy from `/api` to the Express server
@@ -38,7 +38,7 @@ Built from [project-scope.md](project-scope.md) and [tech-stack.md](tech-stack.m
 - [ ] HD-28 `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
 - [ ] HD-29 Middleware: `requireAuth` and `requireAdmin`
 - [ ] HD-30 Rate limiting on login
-- [ ] HD-31 Client: login page and form
+- [x] HD-31 Client: login page and form
 - [ ] HD-32 Client: auth context, protected routes, redirect to login
 - [ ] HD-33 Client: app layout with navigation and a logout button
 - [ ] HD-34 Tests: login, logout and protected routes
