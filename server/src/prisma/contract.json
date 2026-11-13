@@ -24,6 +24,21 @@
   "domain": {
     "namespaces": {
       "public": {
+        "enum": {
+          "Role": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "Admin",
+                "value": "admin"
+              },
+              {
+                "name": "Agent",
+                "value": "agent"
+              }
+            ]
+          }
+        },
         "models": {
           "Account": {
             "fields": {
@@ -335,6 +350,19 @@
                   "kind": "scalar"
                 }
               },
+              "role": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "Role",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -394,6 +422,9 @@
                 },
                 "name": {
                   "column": "name"
+                },
+                "role": {
+                  "column": "role"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -687,6 +718,13 @@
               ]
             },
             "user": {
+              "checks": [
+                {
+                  "expression": "\"role\" IN ('admin', 'agent')",
+                  "name": "user_role_check_b3266c03",
+                  "prefix": "user_role_check"
+                }
+              ],
               "columns": {
                 "createdAt": {
                   "codecId": "pg/timestamptz-date@1",
@@ -725,6 +763,21 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "role": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "agent"
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "Role",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-date@1",
@@ -810,13 +863,22 @@
               },
               "uniques": []
             }
+          },
+          "valueSet": {
+            "Role": {
+              "kind": "valueSet",
+              "values": [
+                "admin",
+                "agent"
+              ]
+            }
           }
         },
         "id": "public",
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "7f57e84a24960be84321b0a33f8907c4327c627006ae2fa567ef49e56bb78789"
+    "storageHash": "4dfc93fb8de0136932da859a99d9aa8e5492b71e2bf8b6c95511a281b7632e5d"
   },
   "capabilities": {
     "postgres": {

@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'7f57e84a24960be84321b0a33f8907c4327c627006ae2fa567ef49e56bb78789'>;
+  StorageHashBase<'4dfc93fb8de0136932da859a99d9aa8e5492b71e2bf8b6c95511a281b7632e5d'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -274,7 +274,15 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
   : Encoded;
 type ParameterizedOutputTypeFunctions = PgParameterizedOutputTypes;
 
-type FieldTypeOverrides = {};
+type FieldTypeOverrides = {
+  readonly public: {
+    readonly models: {
+      readonly User: {
+        readonly role: { readonly output: 'admin' | 'agent'; readonly input: 'admin' | 'agent' };
+      };
+    };
+  };
+};
 export type FieldOutputTypes = FieldTypesFromDomain<
   ContractBase['domain']['namespaces'],
   CodecTypes,
@@ -291,7 +299,13 @@ export type FieldInputTypes = FieldTypesFromDomain<
   'input',
   ContractBase['storage']['namespaces']
 >;
-type ColumnTypeOverrides = {};
+type ColumnTypeOverrides = {
+  readonly public: {
+    readonly user: {
+      readonly role: { readonly output: 'admin' | 'agent'; readonly input: 'admin' | 'agent' };
+    };
+  };
+};
 export type StorageColumnTypes = ColumnTypesFromStorage<
   ContractBase['storage'],
   CodecTypes,
@@ -344,6 +358,7 @@ export namespace Models {
     id: FieldOutputTypes['public']['User']['id'];
     image: FieldOutputTypes['public']['User']['image'];
     name: FieldOutputTypes['public']['User']['name'];
+    role: FieldOutputTypes['public']['User']['role'];
     updatedAt: FieldOutputTypes['public']['User']['updatedAt'];
     accounts: public_Account[];
     sessions: public_Session[];
@@ -614,6 +629,16 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: false;
                 };
+                readonly role: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'agent'>;
+                  };
+                  readonly many: false;
+                };
                 readonly updatedAt: {
                   readonly dataType: 'pg/timestamptz';
                   readonly codecId: 'pg/timestamptz-date@1';
@@ -679,6 +704,12 @@ type ContractBase = Omit<
                 },
               ];
               foreignKeys: readonly [];
+            };
+          };
+          readonly valueSet: {
+            readonly Role: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['admin', 'agent'];
             };
           };
         };
@@ -900,6 +931,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly role: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly updatedAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -942,6 +977,7 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly image: { readonly column: 'image' };
                 readonly name: { readonly column: 'name' };
+                readonly role: { readonly column: 'role' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
@@ -996,6 +1032,21 @@ type ContractBase = Omit<
               };
             };
           };
+        };
+        readonly enum: {
+          readonly Role: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'Admin'; readonly value: 'admin' },
+              { readonly name: 'Agent'; readonly value: 'agent' },
+            ];
+          };
+        };
+        readonly enumMemberTypes?: {
+          readonly Role: readonly [
+            { readonly name: 'Admin'; readonly value: 'admin' },
+            { readonly name: 'Agent'; readonly value: 'agent' },
+          ];
         };
       };
     };

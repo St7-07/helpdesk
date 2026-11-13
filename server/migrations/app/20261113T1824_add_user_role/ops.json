@@ -1,0 +1,119 @@
+[
+  {
+    "id": "column.public.user.role",
+    "label": "Add column \"role\" to \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "role",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"role\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "role"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"role\" on \"user\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"role\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD COLUMN \"role\" text DEFAULT 'agent' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"role\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "role"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"role\" on \"user\""
+        }
+      },
+      {
+        "description": "verify column \"role\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "role",
+          "text"
+        ]
+      },
+      {
+        "description": "verify column \"role\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "user",
+          "role",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.user.user_role_check_b3266c03",
+    "label": "Add check constraint \"user_role_check_b3266c03\" on \"user\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "user_role_check_b3266c03",
+        "table": "user"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"user_role_check_b3266c03\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_role_check_b3266c03",
+          "public",
+          "\"public\".\"user\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"user_role_check_b3266c03\" on \"user\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"user_role_check_b3266c03\"",
+        "sql": "ALTER TABLE \"public\".\"user\" ADD CONSTRAINT \"user_role_check_b3266c03\" CHECK (\"role\" IN ('admin', 'agent'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify check constraint \"user_role_check_b3266c03\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4)) AS \"result\"",
+        "params": [
+          "user_role_check_b3266c03",
+          "public",
+          "\"public\".\"user\"",
+          "c"
+        ]
+      }
+    ]
+  }
+]
