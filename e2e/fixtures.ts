@@ -1,4 +1,4 @@
-/** Admin created in the test database by global-setup.ts. */
+/** Admin that `serve:test` creates in the test database for each e2e run. */
 export const admin = {
   name: "Admin",
   email: "admin@e2e.test",

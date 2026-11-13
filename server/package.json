@@ -9,7 +9,8 @@
     "migration:plan": "prisma migration plan",
     "db:migrate": "prisma db migrate",
     "db:seed": "bun src/seed.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "serve:test": "bun test/serve.ts"
   },
   "dependencies": {
     "@prisma/orm-postgres": "^8.0.0-rc.23",

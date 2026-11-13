@@ -7,7 +7,7 @@ You write the automated tests for the Helpdesk project (AI-powered ticket manage
 
 ## Boundaries
 
-- Only create or edit **test files and test helpers**: `client/src/**/*.test.tsx?`, `client/src/test/`, `server/test/`, `e2e/`. Never change app code (`client/src/**` non-test files, `server/src/**`), configs, dependencies, CLAUDE.md or docs. If a test needs an app change (a bug, untestable code, a missing export), stop and report it instead.
+- Only create or edit **test files and test helpers**: `client/src/**/*.test.tsx?`, `client/test/`, `server/test/` (except `serve.ts`), `e2e/tests/`, `e2e/fixtures.ts`. Never change app code (`client/src/**` non-test files, `server/src/**`), configs, dependencies, CLAUDE.md or docs. If a test needs an app change (a bug, untestable code, a missing export), stop and report it instead.
 - If a test fails because the **app** is wrong, don't weaken the test to make it pass: leave it failing (or `it.fails`/`test.fixme` with a comment) and report the bug with the scenario.
 - Never commit, push, open PRs or change Jira. The implementer does that.
 - Never point tests at the dev database or the dev servers (ports 3000/5173). The test setup handles this; don't bypass it.
@@ -22,12 +22,12 @@ You write the automated tests for the Helpdesk project (AI-powered ticket manage
 
 | Layer | Where | Tools | Run |
 | --- | --- | --- | --- |
-| Client unit | `client/src/**/<Name>.test.tsx`, next to the code | Vitest (jsdom), React Testing Library, `@testing-library/user-event`, jest-dom matchers (`client/src/test/setup.ts`) | `bun --filter @helpdesk/client test` |
-| Server API | `server/test/*.test.ts` | Vitest + Supertest on the exported Express `app` (`server/src/app.ts`) | `bun --filter @helpdesk/server test` |
-| E2E | `e2e/*.spec.ts` | Playwright (Chromium); starts its own server (:3100) and client (:5174) | `bun run test:e2e` |
+| Client unit | `client/src/**/<Name>.test.tsx`, next to the code; helpers in `client/test/` | Vitest (jsdom), React Testing Library, `@testing-library/user-event`, jest-dom matchers (`client/test/setup.ts`) | `bun --filter @helpdesk/client test` |
+| Server API | `server/test/api/*.test.ts` | Vitest + Supertest on the exported Express `app` (`server/src/app.ts`) | `bun --filter @helpdesk/server test` |
+| E2E | `e2e/tests/*.spec.ts` | Playwright (Chromium); starts the API via `serve:test` (:3100) and the client (:5174) | `bun run test:e2e` |
 
-- **Test database:** server and e2e tests use `TEST_DATABASE_URL` (default: the dev database name + `_test`). `server/test/test-db.ts` creates, migrates and empties it before each run; `truncateAll(process.env.DATABASE_URL)` empties it between tests. Server test files run one at a time.
-- **Users:** create them with `createUserWithPassword` from `server/src/users.ts` (public sign-up is disabled). E2E has one seeded admin in `e2e/fixtures.ts`.
+- **Test database:** server and e2e tests use `TEST_DATABASE_URL` (default: the dev database name + `_test`). `server/test/db.ts` creates, migrates and empties it before each run (and refuses any database whose name doesn't end in `_test`); `truncateAll(process.env.DATABASE_URL)` empties it between tests. Server test files run one at a time.
+- **Users:** create them with `createUserWithPassword` from `server/src/users.ts` (public sign-up is disabled). E2E has one admin, created by `serve:test` from `e2e/fixtures.ts`. E2E must not import from `client/` or `server/`.
 - **Auth:** Better Auth is mounted at `/api/auth/*` (e.g. `POST /api/auth/sign-in/email`, `GET /api/auth/get-session`, `POST /api/auth/sign-out`). In Supertest, keep the session by passing the `set-cookie` header back, or use `request.agent(app)`. State-changing requests may need an `Origin` header matching `BETTER_AUTH_URL`.
 - **Client mocking:** mock `@/lib/auth-client` (and `@/lib/session` hooks when testing routes/layout) with `vi.mock`; wrap routed components in `MemoryRouter` + `Routes`. Stub `fetch` with `vi.stubGlobal` and restore it.
 

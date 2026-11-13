@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assertSafeTestDatabase } from "./test-db";
+import { assertSafeTestDatabase } from "./db";
 
 const dev = "postgresql://st7@localhost:5432/helpdesk";
 
@@ -8,9 +8,9 @@ describe("assertSafeTestDatabase", () => {
     expect(() => assertSafeTestDatabase("postgresql://st7@localhost:5432/helpdesk_test", [dev])).not.toThrow();
   });
 
-  it("accepts being called again after DATABASE_URL was switched to the test URL", () => {
-    const test = "postgresql://st7@localhost:5432/helpdesk_test";
-    expect(() => assertSafeTestDatabase(test, [dev, test])).not.toThrow();
+  it("rejects a dev database that itself ends in _test", () => {
+    const devTest = "postgresql://st7@localhost:5432/helpdesk_test";
+    expect(() => assertSafeTestDatabase(devTest, [devTest])).toThrow(/points at the DATABASE_URL database/);
   });
 
   it.each([

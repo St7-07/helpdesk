@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { admin } from "./fixtures";
+import { admin } from "../fixtures";
 
 test.describe("authentication", () => {
   test("signs in, shows the user, signs out, and protects pages again", async ({ page, context }) => {

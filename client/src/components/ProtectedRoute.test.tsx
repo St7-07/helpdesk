@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import GuestRoute from "@/components/GuestRoute";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useSession } from "@/lib/session";
-import { fakeSession } from "@/test/session";
+import { fakeSession } from "../../test/session";
 
 vi.mock("@/lib/session", () => ({ useSession: vi.fn() }));
 

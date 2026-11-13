@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import AppLayout from "@/components/AppLayout";
 import { useCurrentUser } from "@/lib/session";
-import { fakeSession } from "@/test/session";
+import { fakeSession } from "../../test/session";
 
 const { signOut } = vi.hoisted(() => ({ signOut: vi.fn() }));
 

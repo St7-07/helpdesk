@@ -1,10 +1,10 @@
 import pg from "pg";
 import request from "supertest";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { app } from "../src/app";
-import { Role } from "../src/roles";
-import { createUserWithPassword } from "../src/users";
-import { truncateAll } from "./test-db";
+import { app } from "../../src/app";
+import { Role } from "../../src/roles";
+import { createUserWithPassword } from "../../src/users";
+import { truncateAll } from "../db";
 
 const databaseUrl = process.env["DATABASE_URL"]!;
 // Better Auth checks the Origin of state-changing requests.

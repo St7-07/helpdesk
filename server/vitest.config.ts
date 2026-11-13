@@ -1,5 +1,5 @@
 import { defineConfig } from "vitest/config";
-import { testEnv } from "./test/test-db";
+import { testEnv } from "./test/db";
 
 // Point everything (global setup and test workers) at the test database.
 const env = testEnv();

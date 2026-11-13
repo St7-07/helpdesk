@@ -1,5 +1,5 @@
-// Test database helpers, shared by the server tests (Vitest) and the e2e
-// tests (Playwright). Tests never touch the dev database: they use
+// Test database helpers for the server tests (Vitest) and `serve:test`
+// (the API the e2e tests run against). Tests never touch the dev database: they use
 // TEST_DATABASE_URL, or DATABASE_URL with "_test" appended to the db name.
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -26,7 +26,9 @@ export function testEnv(): Record<string, string> {
     parsed.pathname = `${parsed.pathname}_test`;
     url = parsed.toString();
   }
-  assertSafeTestDatabase(url, [fileEnv["DATABASE_URL"], process.env["DATABASE_URL"]]);
+  // A process that already ran testEnv() has DATABASE_URL = the test URL.
+  const processUrl = process.env["DATABASE_URL"];
+  assertSafeTestDatabase(url, [fileEnv["DATABASE_URL"], processUrl === url ? undefined : processUrl]);
 
   return {
     // Also exported so a second call (e.g. in a child process) stays on it.
@@ -49,8 +51,7 @@ export function assertSafeTestDatabase(testUrl: string, devUrls: (string | undef
     throw new Error(`Refusing to run tests: database "${test.split("/").pop()}" must end in "_test"`);
   }
   for (const devUrl of devUrls) {
-    // A process that already ran testEnv() has DATABASE_URL = the test URL.
-    if (devUrl && devUrl !== testUrl && databaseIdentity(devUrl) === test) {
+    if (devUrl && databaseIdentity(devUrl) === test) {
       throw new Error("Refusing to run tests: TEST_DATABASE_URL points at the DATABASE_URL database");
     }
   }
