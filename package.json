@@ -3,9 +3,15 @@
   "private": true,
   "workspaces": [
     "client",
-    "server"
+    "server",
+    "e2e"
   ],
   "scripts": {
-    "dev": "bun --filter '*' dev"
+    "dev": "bun --filter '*' dev",
+    "test": "bun --filter '*' test",
+    "test:e2e": "bun run --cwd e2e e2e",
+    "ui:client": "bun scripts/vitest-ui.ts client",
+    "ui:server": "bun scripts/vitest-ui.ts server",
+    "ui:e2e": "bun run --cwd e2e ui"
   }
 }

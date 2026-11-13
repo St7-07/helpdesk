@@ -23,8 +23,17 @@ Bun (runtime + package manager) with workspaces `client/` and `server/` (`shared
 - `bun run dev` — start both workspaces: client (Vite, http://localhost:5173, proxies `/api` → server) and server (Bun watch mode on `PORT`, default 3000; `GET /api/health` → `{"status":"ok"}`)
 - `bun --filter @helpdesk/client typecheck` / `bun --filter @helpdesk/server typecheck` — typecheck a workspace
 - Database (run in `server/`; needs `server/.env` with `DATABASE_URL`, see `server/.env.example`): after editing `src/prisma/contract.prisma` run `bun run contract:emit`, then `bun run migration:plan --name <name> --from <latest migrations/app dir>`, then `bun run db:migrate`. `bun run db:seed` creates the first admin from `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD` (idempotent). `GET /api/health` also reports `db: "ok" | "error"`.
+- Tests: `bun run test` runs client unit tests (Vitest + React Testing Library, jsdom) and server API tests (Vitest + Supertest); `bun run test:e2e` runs Playwright (it starts the API with `serve:test` on :3100 and the client on :5174; first time: `bunx playwright install chromium`). To see results in a browser: `bun run ui:client` / `bun run ui:server` (Vitest UI with a Coverage tab, opened in the browser with its access token by `scripts/vitest-ui.ts`) and `bun run ui:e2e` (Playwright UI mode with step-by-step traces). Server and e2e tests use a separate database (`TEST_DATABASE_URL`, default: the dev database name + `_test`) that they create, migrate and empty themselves.
 
 Add commands here as tickets introduce them (lint, build, db:migrate, root typecheck).
+
+## Project structure
+
+- Workspaces: `client/` (React app), `server/` (Express API), `e2e/` (Playwright tests). Root `scripts/` holds dev tooling only.
+- Each workspace owns its tests and test config:
+  - `client/`: unit tests next to the code (`src/**/<Name>.test.tsx`); shared test setup/helpers in `client/test/`; `client/vitest.config.ts`.
+  - `server/`: API tests over HTTP in `server/test/api/`; test-database helpers (`server/test/db.ts`) and the e2e API entry (`server/test/serve.ts`, `bun run serve:test`) in `server/test/`; `server/vitest.config.ts`.
+  - `e2e/`: specs in `e2e/tests/`, shared data in `e2e/fixtures.ts`, `e2e/playwright.config.ts`. E2E never imports from other workspaces; it only runs their scripts.
 
 ## Working rules
 
@@ -37,7 +46,7 @@ Add commands here as tickets introduce them (lint, build, db:migrate, root typec
 Work happens **one Jira ticket at a time, only when the user says to start it** ("now"); never start the next ticket on your own.
 
 1. Branch from `main`: `hd-<n>-<slug>`. Move the Jira issue to **In Progress** (transition id `21`).
-2. Implement, run the checks, commit, push, open a PR titled `HD-<n>: <summary>` (body: acceptance criteria + Jira link).
+2. Implement, run the `test-writer` subagent (`.claude/agents/test-writer.md`) with the ticket key, acceptance criteria and changed files, run the checks, commit, push, open a PR titled `HD-<n>: <summary>` (body: acceptance criteria + Jira link).
 3. Move the issue to **Review** (`41`) and run the `code-reviewer` subagent (`.claude/agents/code-reviewer.md`) with the ticket key, acceptance criteria, changed files and PR number. It posts its full report **on the PR** and a **Jira comment** listing only the acceptance criteria marked ✅/❌/⚠️; it never edits code.
 4. On CHANGES REQUESTED: fix, push, re-run the reviewer (each round posts a new PR report and adds a new Jira criteria comment).
 5. Only after the reviewer approves **and** the user says OK: check the bullet in `implementation-plan.md` (`[x]`, or `[x] ~~item~~ (not doing: reason)` if dropped) in the same PR, squash-merge, delete the branch, move the issue to **Done** (`31`).

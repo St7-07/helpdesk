@@ -1,0 +1,15 @@
+{
+  "name": "@helpdesk/e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "ui": "playwright test --ui",
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
+    "typescript": "~7.0.2"
+  }
+}
