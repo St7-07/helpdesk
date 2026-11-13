@@ -1,9 +1,14 @@
+import { toNodeHandler } from "better-auth/node";
 import express from "express";
+import { auth } from "./auth";
 import { db } from "./prisma/db";
 
 const port = Number(process.env.PORT ?? 3000);
 
 const app = express();
+
+// Must be mounted before any body-parsing middleware.
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 async function checkDatabase(): Promise<"ok" | "error"> {
   try {
