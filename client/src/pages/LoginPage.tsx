@@ -1,44 +1,49 @@
-import { useState, type FormEvent } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { authClient } from "../lib/auth-client";
 
-type FieldErrors = { email?: string; password?: string };
+const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required.")
+    .pipe(z.email("Enter a valid email address.")),
+  password: z.string().min(1, "Password is required."),
+});
 
-function validate(email: string, password: string): FieldErrors {
-  const errors: FieldErrors = {};
-  if (!email.trim()) errors.email = "Email is required.";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
-    errors.email = "Enter a valid email address.";
-  if (!password) errors.password = "Password is required.";
-  return errors;
-}
+type LoginValues = z.infer<typeof loginSchema>;
 
-const inputClass =
-  "w-full rounded-md border px-3 py-2 text-sm focus:ring-1 focus:outline-none";
+const inputClass = "w-full rounded-md border px-3 py-2 text-sm focus:ring-1 focus:outline-none";
 const inputOk = "border-gray-300 focus:border-blue-500 focus:ring-blue-500";
 const inputBad = "border-red-500 focus:border-red-500 focus:ring-red-500";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [submitting, setSubmitting] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
-    const errors = validate(email, password);
-    setFieldErrors(errors);
-    if (errors.email || errors.password) return;
-    setSubmitting(true);
-    const { error } = await authClient.signIn.email({ email: email.trim(), password });
-    if (error) {
-      setError(
-        error.status === 401 ? "Invalid email or password." : (error.message ?? "Sign in failed."),
-      );
-      setSubmitting(false);
+  // On success the session updates and <GuestRoute> redirects.
+  async function onSubmit({ email, password }: LoginValues) {
+    try {
+      const { error } = await authClient.signIn.email({ email, password });
+      if (error) {
+        setError("root.server", {
+          message:
+            error.status === 401
+              ? "Invalid email or password."
+              : (error.message ?? "Sign in failed. Please try again."),
+        });
+      }
+    } catch {
+      setError("root.server", { message: "Could not reach the server. Please try again." });
     }
-    // On success the session updates and <GuestRoute> redirects.
   }
 
   return (
@@ -47,7 +52,7 @@ export default function LoginPage() {
         <h1 className="mb-6 text-center text-2xl font-semibold text-gray-900">
           Sign in to Helpdesk
         </h1>
-        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
           <div>
             <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
               Email
@@ -56,16 +61,14 @@ export default function LoginPage() {
               id="email"
               type="email"
               autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              aria-invalid={fieldErrors.email ? true : undefined}
-              aria-describedby={fieldErrors.email ? "email-error" : undefined}
-              className={`${inputClass} ${fieldErrors.email ? inputBad : inputOk}`}
+              aria-invalid={errors.email ? true : undefined}
+              aria-describedby={errors.email ? "email-error" : undefined}
+              className={`${inputClass} ${errors.email ? inputBad : inputOk}`}
+              {...register("email")}
             />
-            {fieldErrors.email && (
+            {errors.email && (
               <p id="email-error" className="mt-1 text-sm text-red-600">
-                {fieldErrors.email}
+                {errors.email.message}
               </p>
             )}
           </div>
@@ -77,30 +80,28 @@ export default function LoginPage() {
               id="password"
               type="password"
               autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              aria-invalid={fieldErrors.password ? true : undefined}
-              aria-describedby={fieldErrors.password ? "password-error" : undefined}
-              className={`${inputClass} ${fieldErrors.password ? inputBad : inputOk}`}
+              aria-invalid={errors.password ? true : undefined}
+              aria-describedby={errors.password ? "password-error" : undefined}
+              className={`${inputClass} ${errors.password ? inputBad : inputOk}`}
+              {...register("password")}
             />
-            {fieldErrors.password && (
+            {errors.password && (
               <p id="password-error" className="mt-1 text-sm text-red-600">
-                {fieldErrors.password}
+                {errors.password.message}
               </p>
             )}
           </div>
-          {error && (
+          {errors.root?.server && (
             <p role="alert" className="text-sm text-red-600">
-              {error}
+              {errors.root.server.message}
             </p>
           )}
           <button
             type="submit"
-            disabled={submitting}
+            disabled={isSubmitting}
             className="w-full rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
           >
-            {submitting ? "Signing in…" : "Sign in"}
+            {isSubmitting ? "Signing in…" : "Sign in"}
           </button>
         </form>
       </div>
