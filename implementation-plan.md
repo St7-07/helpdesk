@@ -31,9 +31,9 @@ Built from [project-scope.md](project-scope.md) and [tech-stack.md](tech-stack.m
 ## Phase 1 — Authentication · [HD-2](https://st7-07.atlassian.net/browse/HD-2)
 
 - [ ] HD-23 Prisma: `User` model (name, email, password hash, role `ADMIN | AGENT`, active flag)
-- [ ] HD-24 Prisma: `Session` model for database sessions
+- [x] HD-24 Prisma: `Session` model for database sessions
 - [ ] HD-25 Choose a password hashing library (argon2 is *tentative*)
-- [ ] HD-26 Set up database-backed session middleware and HTTP-only cookie settings
+- [x] HD-26 Set up database-backed session middleware and HTTP-only cookie settings
 - [ ] HD-27 Seed script that creates the first admin
 - [ ] HD-28 `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
 - [ ] HD-29 Middleware: `requireAuth` and `requireAdmin`
