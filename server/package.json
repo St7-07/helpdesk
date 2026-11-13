@@ -8,7 +8,8 @@
     "contract:emit": "prisma contract emit",
     "migration:plan": "prisma migration plan",
     "db:migrate": "prisma db migrate",
-    "db:seed": "bun src/seed.ts"
+    "db:seed": "bun src/seed.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@prisma/orm-postgres": "^8.0.0-rc.23",
@@ -21,8 +22,13 @@
     "@types/bun": "^1.4.4",
     "@types/express": "^5.0.6",
     "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
+    "@vitest/coverage-v8": "^5.1.0",
+    "@vitest/ui": "^5.1.0",
     "dotenv": "^18.0.10",
     "prisma": "^8.0.0-rc.33",
-    "typescript": "7.0.2"
+    "supertest": "^7.3.2",
+    "typescript": "7.0.2",
+    "vitest": "^5.1.0"
   }
 }

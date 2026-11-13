@@ -21,7 +21,8 @@ Run whichever of these exist (check `package.json` scripts first) and record pas
 
 - `bun run lint`
 - type check (`bun run typecheck`)
-- `bun test` / workspace tests
+- `bun run test` (client unit + server API tests)
+- `bun run test:e2e` (Playwright; starts its own servers on :3100/:5174 against the test database)
 - `bun run build`
 
 A failing check is at least a **major** finding.
@@ -37,6 +38,7 @@ Check each changed file for:
 - **React:** correct hook dependencies, no state derived redundantly, loading/empty/error states handled, accessible markup (labels, buttons not divs, keyboard use).
 - **Cleanliness:** code is completely clear and functional — clear names, small focused functions, no dead or commented-out code, no duplication that should be shared, no leftover debug logging, config from environment variables, `.env` never committed.
 - **Nothing unused or premature (strict):** every file, folder, dependency, config entry, script, export, type, option and `.gitignore`/lint rule added in this change must be used by this change right now. Flag as **major**: placeholder or empty folders, scaffolding "for later", unused dependencies or exports, config for tools not yet in the project, unneeded template boilerplate left in place, speculative abstractions (interfaces/factories/layers with a single trivial use), and premature optimization (caching, memoization, pooling, tuning) without a demonstrated need. Check `package.json` dependencies against actual imports.
+- **Tests:** every acceptance criterion with testable behavior is covered by an automated test (client unit, server API or e2e) that would fail if the behavior broke; failure paths are tested, not just the happy path. Missing tests for a criterion are a **major** finding.
 - **Scope:** the change does what the ticket asks — no missing acceptance criteria, no unrelated changes.
 
 Only report real problems you can point to (for unused/premature additions, name the exact file, line or dependency). Do not pad the report with style nitpicks a linter would catch, and do not report something as a bug unless you can explain the failing scenario.
