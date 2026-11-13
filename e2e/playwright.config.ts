@@ -29,6 +29,7 @@ export default defineConfig({
       env: {
         PORT: String(API_PORT),
         BETTER_AUTH_URL: clientUrl,
+        TEST_ADMIN_NAME: admin.name,
         TEST_ADMIN_EMAIL: admin.email,
         TEST_ADMIN_PASSWORD: admin.password,
       },

@@ -1,12 +1,14 @@
 // `bun run serve:test`: the API the e2e tests run against. Resets the test
-// database, creates the admin given in TEST_ADMIN_EMAIL / TEST_ADMIN_PASSWORD,
-// then starts the server (PORT, BETTER_AUTH_URL from the environment).
+// database, creates the admin given in TEST_ADMIN_NAME / TEST_ADMIN_EMAIL /
+// TEST_ADMIN_PASSWORD, then starts the server (PORT, BETTER_AUTH_URL from the
+// environment).
 import { resetTestDatabase, testEnv } from "./db";
 
+const name = process.env["TEST_ADMIN_NAME"];
 const email = process.env["TEST_ADMIN_EMAIL"];
 const password = process.env["TEST_ADMIN_PASSWORD"];
-if (!email || !password) {
-  console.error("Set TEST_ADMIN_EMAIL and TEST_ADMIN_PASSWORD");
+if (!name || !email || !password) {
+  console.error("Set TEST_ADMIN_NAME, TEST_ADMIN_EMAIL and TEST_ADMIN_PASSWORD");
   process.exit(1);
 }
 
@@ -17,6 +19,6 @@ await resetTestDatabase(env);
 
 const { Role } = await import("../src/roles");
 const { createUserWithPassword } = await import("../src/users");
-await createUserWithPassword({ email, password, name: "Admin", role: Role.Admin });
+await createUserWithPassword({ email, password, name, role: Role.Admin });
 
 await import("../src/index");
