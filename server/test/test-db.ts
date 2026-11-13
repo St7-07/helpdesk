@@ -26,9 +26,7 @@ export function testEnv(): Record<string, string> {
     parsed.pathname = `${parsed.pathname}_test`;
     url = parsed.toString();
   }
-  if (url === fileEnv["DATABASE_URL"]) {
-    throw new Error("TEST_DATABASE_URL must differ from DATABASE_URL");
-  }
+  assertSafeTestDatabase(url, [fileEnv["DATABASE_URL"], process.env["DATABASE_URL"]]);
 
   return {
     // Also exported so a second call (e.g. in a child process) stays on it.
@@ -37,6 +35,33 @@ export function testEnv(): Record<string, string> {
     BETTER_AUTH_SECRET: "test-secret-not-for-production-0123456789",
     BETTER_AUTH_URL: process.env["BETTER_AUTH_URL"] ?? fileEnv["BETTER_AUTH_URL"] ?? "http://localhost:5173",
   };
+}
+
+/**
+ * Tests migrate and empty their database, so refuse anything that isn't
+ * clearly a test database: its name must end in "_test", and it must not be
+ * the same database as a dev URL (compared by host, port and name, so a
+ * different spelling of the same URL doesn't slip through).
+ */
+export function assertSafeTestDatabase(testUrl: string, devUrls: (string | undefined)[]): void {
+  const test = databaseIdentity(testUrl);
+  if (!test.endsWith("_test")) {
+    throw new Error(`Refusing to run tests: database "${test.split("/").pop()}" must end in "_test"`);
+  }
+  for (const devUrl of devUrls) {
+    // A process that already ran testEnv() has DATABASE_URL = the test URL.
+    if (devUrl && devUrl !== testUrl && databaseIdentity(devUrl) === test) {
+      throw new Error("Refusing to run tests: TEST_DATABASE_URL points at the DATABASE_URL database");
+    }
+  }
+}
+
+/** "host:port/dbname", with local host spellings and the default port unified. */
+function databaseIdentity(databaseUrl: string): string {
+  const url = new URL(databaseUrl);
+  const host = url.hostname.toLowerCase();
+  const isLocal = ["", "localhost", "127.0.0.1", "[::1]"].includes(host);
+  return `${isLocal ? "localhost" : host}:${url.port || "5432"}/${decodeURIComponent(url.pathname.slice(1))}`;
 }
 
 /** Creates the test database if needed, applies migrations and empties it. */
