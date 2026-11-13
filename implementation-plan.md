@@ -34,7 +34,7 @@ Built from [project-scope.md](project-scope.md) and [tech-stack.md](tech-stack.m
 - [x] HD-24 Prisma: `Session` model for database sessions
 - [ ] HD-25 Choose a password hashing library (argon2 is *tentative*)
 - [x] HD-26 Set up database-backed session middleware and HTTP-only cookie settings
-- [ ] HD-27 Seed script that creates the first admin
+- [x] HD-27 Seed script that creates the first admin
 - [ ] HD-28 `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
 - [ ] HD-29 Middleware: `requireAuth` and `requireAdmin`
 - [ ] HD-30 Rate limiting on login
